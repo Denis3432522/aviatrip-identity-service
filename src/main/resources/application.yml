@@ -1,3 +1,7 @@
+server:
+  servlet:
+    context-path: /api
+
 spring:
   application:
     name: identity-service
@@ -9,7 +13,7 @@ spring:
     password: ${db_password}
     username:
     url:
-  #https://github.com/Denis3432522/aviatrip-identity-service.git
+
   jpa:
     show-sql: true
     hibernate:
@@ -24,3 +28,5 @@ eureka:
   client:
     service-url:
       defaultZone:
+
+        
