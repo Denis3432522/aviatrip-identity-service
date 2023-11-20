@@ -8,6 +8,10 @@ public class BadRequestException extends RuntimeException {
 
     private final ErrorResponse errorResponse;
 
+    public BadRequestException() {
+        this.errorResponse = null;
+    }
+
     public BadRequestException(ErrorResponse errorResponse) {
         this.errorResponse = errorResponse;
     }

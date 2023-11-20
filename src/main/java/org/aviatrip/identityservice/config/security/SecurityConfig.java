@@ -3,7 +3,6 @@ package org.aviatrip.identityservice.config.security;
 import lombok.RequiredArgsConstructor;
 import org.aviatrip.identityservice.repository.UserRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -35,11 +34,5 @@ public class SecurityConfig {
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "jwt")
-    public JwtProperties jwtProperties() {
-        return new JwtProperties();
     }
 }

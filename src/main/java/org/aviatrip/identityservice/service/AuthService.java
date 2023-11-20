@@ -3,10 +3,7 @@ package org.aviatrip.identityservice.service;
 import lombok.RequiredArgsConstructor;
 import org.aviatrip.identityservice.dto.request.UserRequest;
 import org.aviatrip.identityservice.dto.request.auth.AuthRequest;
-import org.aviatrip.identityservice.dto.response.error.BadCredentialResponse;
-import org.aviatrip.identityservice.dto.response.error.ErrorResponse;
-import org.aviatrip.identityservice.dto.response.error.ValueEqualsToOldValueResponse;
-import org.aviatrip.identityservice.dto.response.error.ValueNotUniqueResponse;
+import org.aviatrip.identityservice.dto.response.error.*;
 import org.aviatrip.identityservice.entity.User;
 import org.aviatrip.identityservice.enumeration.Role;
 import org.aviatrip.identityservice.exception.BadRequestException;
@@ -17,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -29,46 +27,52 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationProvider authenticationProvider;
 
-    public void createUser(UserRequest model) {
-        assertEmailUnique(model.getEmail());
+    @Transactional
+    public User createUser(UserRequest dto) {
+        assertEmailUnique(dto.getEmail());
 
         User user = User.builder()
-                .name(model.getName())
-                .surname(model.getSurname())
-                .email(model.getEmail())
-                .role(model.getRole())
-                .password(passwordEncoder.encode(model.getPassword()))
+                .name(dto.getName())
+                .surname(dto.getSurname())
+                .email(dto.getEmail())
+                .role(dto.getRole())
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .build();
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
-    public Authentication authenticate(AuthRequest request) {
+    public Authentication authenticate(AuthRequest dto) {
         try {
             return authenticationProvider
-                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         } catch (AuthenticationException ex) {
-            throw  new BadRequestException(new BadCredentialResponse());
+            throw new BadRequestException(new BadCredentialResponse());
         }
     }
 
     public String generateToken(Role role, String userId) {
-        return jwtService.generateToken(role.getRoleName(), userId);
+        return jwtService.generateToken(role.toString(), userId);
     }
 
     public void validate(String token) {
         try {
             jwtService.validateToken(token);
         } catch (Exception ex) {
-            throw new BadRequestException(ErrorResponse.builder().errorMessage("invalid access token").build());
+            throw new BadRequestException(ErrorResponse.builder()
+                    .errorMessage("invalid access token")
+                    .build()
+            );
         }
     }
 
+    @Transactional
     public void assertEmailUnique(String email) {
         if(userRepository.existsByEmail(email))
             throw new BadRequestException(new ValueNotUniqueResponse("email"));
     }
 
+    @Transactional
     public void updatePassword(String rawPassword, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
 
@@ -79,7 +83,10 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(UUID userId) {
-        userRepository.deleteById(userId);
+        int rowCount = userRepository.deleteUserById(userId);
+        if(rowCount == 0)
+            throw new BadRequestException(new ResourceNotFoundResponse("User with ID " + userId));
     }
 }

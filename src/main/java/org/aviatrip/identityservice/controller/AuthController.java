@@ -6,7 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.aviatrip.identityservice.dto.request.UserRequest;
 import org.aviatrip.identityservice.dto.request.auth.AuthRequest;
 import org.aviatrip.identityservice.dto.request.auth.UpdateUserPasswordRequest;
+import org.aviatrip.identityservice.entity.User;
 import org.aviatrip.identityservice.enumeration.Role;
+import org.aviatrip.identityservice.enumeration.UserEventType;
+import org.aviatrip.identityservice.exception.InternalServerErrorException;
+import org.aviatrip.identityservice.kafka.event.UserEvent;
+import org.aviatrip.identityservice.kafka.producer.UserEventProducer;
 import org.aviatrip.identityservice.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -21,18 +26,29 @@ import java.util.UUID;
 @Slf4j
 public class AuthController {
     private final AuthService authService;
+    private final UserEventProducer userEventProducer;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void createUser(@RequestBody @Valid UserRequest model) {
-        authService.createUser(model);
+        User user = authService.createUser(model);
+
+        UserEvent event = UserEvent.builder()
+                .userId(user.getId())
+                .eventType(UserEventType.CREATED)
+                .build();
+
+        userEventProducer.sendUserEvent(event, user.getRole());
     }
 
     @PostMapping("/token")
     public String generateToken(@RequestBody @Valid AuthRequest request) {
 
         Authentication authentication = authService.authenticate(request);
-        Role role = Role.valueOf(authentication.getAuthorities().stream().findFirst().orElseThrow(RuntimeException::new).toString());
+        Role role = Role.valueOf(authentication.getAuthorities()
+                .stream().findFirst()
+                .orElseThrow(InternalServerErrorException::new)
+                .toString());
 
         return authService.generateToken(role, ((UserDetails) authentication.getPrincipal()).getUsername());
     }
@@ -50,7 +66,14 @@ public class AuthController {
     }
 
     @DeleteMapping("/user")
-    public void deleteUser(@RequestHeader("subject") UUID userId) {
+    public void deleteUser(@RequestHeader("subject") UUID userId, @RequestHeader("role") Role role) {
         authService.deleteUser(userId);
+
+        UserEvent event = UserEvent.builder()
+                .userId(userId)
+                .eventType(UserEventType.DELETED)
+                .build();
+
+        userEventProducer.sendUserEvent(event, role);
     }
 }

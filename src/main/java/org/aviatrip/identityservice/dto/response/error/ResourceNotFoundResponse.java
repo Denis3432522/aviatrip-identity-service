@@ -12,4 +12,8 @@ public class ResourceNotFoundResponse extends ErrorResponse {
     public ResourceNotFoundResponse(String resourceName) {
         super(resourceName + MESSAGE_POSTFIX, null);
     }
+
+    public ResourceNotFoundResponse(String resourceName, String details) {
+        super(resourceName + MESSAGE_POSTFIX, details);
+    }
 }
