@@ -7,6 +7,7 @@ import org.aviatrip.identityservice.dto.response.error.ValueEqualsToOldValueResp
 import org.aviatrip.identityservice.dto.response.error.ValueNotUniqueResponse;
 import org.aviatrip.identityservice.entity.User;
 import org.aviatrip.identityservice.exception.BadRequestException;
+import org.aviatrip.identityservice.exception.InternalServerErrorException;
 import org.aviatrip.identityservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,30 +19,14 @@ public class ProfileService {
 
     private final UserRepository userRepository;
 
-//
-//    @Transactional
-//    public User saveCustomer(User user) {
-//        User persistedUser = saveUser(user, Roles.ROLE_CUSTOMER);
-//        customerService.createCustomer(persistedUser);
-//
-//        return persistedUser;
-//    }
-//
-//    @Transactional
-//    public User saveRepresentative(User user, String companyName) {
-//        representativeService.assertCompanyNameUnique(companyName);
-//        User persistedUser = saveUser(user, Roles.ROLE_REPRESENTATIVE);
-//        representativeService.createRepresentativeAndCompany(persistedUser, companyName);
-//
-//        return persistedUser;
-//    }
-
     public UserInfo retrieveUserInfo(UUID userId) {
-        return userRepository.findUserInfoById(userId).orElseThrow(() -> new BadRequestException(new ResourceNotFoundResponse("user with " + userId + " id")));
+        return userRepository.findUserInfoById(userId)
+                .orElseThrow(() -> new BadRequestException(new ResourceNotFoundResponse("user with " + userId + " id")));
     }
 
     public void updateName(String name, UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(InternalServerErrorException::new);
 
         if(user.getName().equals(name))
             throw new BadRequestException(new ValueEqualsToOldValueResponse("name"));
@@ -51,7 +36,8 @@ public class ProfileService {
     }
 
     public void updateSurname(String surname, UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(InternalServerErrorException::new);
 
         if(user.getSurname().equals(surname))
             throw new BadRequestException(new ValueEqualsToOldValueResponse("surname"));
@@ -61,7 +47,8 @@ public class ProfileService {
     }
 
     public void updateEmail(String email, UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(InternalServerErrorException::new);
 
         if(user.getEmail().equals(email))
             throw new BadRequestException(new ValueEqualsToOldValueResponse("email"));

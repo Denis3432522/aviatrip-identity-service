@@ -1,6 +1,7 @@
 server:
   servlet:
     context-path: /api
+  port:
 
 spring:
   application:
@@ -13,6 +14,9 @@ spring:
     password: ${db_password}
     username:
     url:
+
+  kafka:
+    bootstrap-servers:
 
   jpa:
     show-sql: true
@@ -29,4 +33,13 @@ eureka:
     service-url:
       defaultZone:
 
-        
+kafka:
+  customer-user:
+    topic: main-customer-user
+
+  representative-user:
+    topic: main-representative-user
+
+jwt:
+  secret: ${jwt_secret}
+  token-expiration:
