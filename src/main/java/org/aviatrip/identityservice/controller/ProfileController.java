@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.aviatrip.identityservice.dto.request.auth.UpdateUserEmailRequest;
 import org.aviatrip.identityservice.dto.request.auth.UpdateUserNameRequest;
 import org.aviatrip.identityservice.dto.request.auth.UpdateUserSurnameRequest;
-import org.aviatrip.identityservice.dto.response.error.UserInfo;
+import org.aviatrip.identityservice.dto.response.UserInfo;
 import org.aviatrip.identityservice.service.ProfileService;
 import org.springframework.web.bind.annotation.*;
 

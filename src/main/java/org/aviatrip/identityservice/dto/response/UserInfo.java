@@ -1,4 +1,4 @@
-package org.aviatrip.identityservice.dto.response.error;
+package org.aviatrip.identityservice.dto.response;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -34,11 +34,18 @@ eureka:
       defaultZone:
 
 kafka:
-  customer-user:
-    topic: main-customer-user
+  producer:
+    customer-user:
+      topic: main-customer-user
 
-  representative-user:
-    topic: main-representative-user
+    representative-user:
+      topic: main-representative-user
+
+  consumer:
+    representative:
+      main-groupId: main-representative-group
+      main-topic: main-representative
+      dlq-topic: dlq-representative
 
 jwt:
   secret: ${jwt_secret}

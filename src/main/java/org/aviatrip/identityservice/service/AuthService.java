@@ -7,6 +7,7 @@ import org.aviatrip.identityservice.dto.response.error.*;
 import org.aviatrip.identityservice.entity.User;
 import org.aviatrip.identityservice.enumeration.Role;
 import org.aviatrip.identityservice.exception.BadRequestException;
+import org.aviatrip.identityservice.exception.FatalKafkaException;
 import org.aviatrip.identityservice.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -88,5 +89,12 @@ public class AuthService {
         int rowCount = userRepository.deleteUserById(userId);
         if(rowCount == 0)
             throw new BadRequestException(new ResourceNotFoundResponse("User with ID " + userId));
+    }
+
+    @Transactional
+    public void updateRole(UUID userId, Role role) {
+        int modifiedRowsCount = userRepository.updateRoleById(role, userId);
+        if(modifiedRowsCount == 0)
+            throw new FatalKafkaException("User with ID " + userId + " not found");
     }
 }

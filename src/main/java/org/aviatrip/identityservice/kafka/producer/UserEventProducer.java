@@ -13,10 +13,10 @@ public class UserEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${kafka.customer-user.topic}")
+    @Value("${kafka.producer.customer-user.topic}")
     private String customerUserTopic;
 
-    @Value("${kafka.representative-user.topic}")
+    @Value("${kafka.producer.representative-user.topic}")
     private String representativeUserTopic;
 
     public void sendUserEvent(UserEvent event, Role role) {

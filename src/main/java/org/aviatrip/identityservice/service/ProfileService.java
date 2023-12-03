@@ -1,8 +1,8 @@
 package org.aviatrip.identityservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.aviatrip.identityservice.dto.response.UserInfo;
 import org.aviatrip.identityservice.dto.response.error.ResourceNotFoundResponse;
-import org.aviatrip.identityservice.dto.response.error.UserInfo;
 import org.aviatrip.identityservice.dto.response.error.ValueEqualsToOldValueResponse;
 import org.aviatrip.identityservice.dto.response.error.ValueNotUniqueResponse;
 import org.aviatrip.identityservice.entity.User;

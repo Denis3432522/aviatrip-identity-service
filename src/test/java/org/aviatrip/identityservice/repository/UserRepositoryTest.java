@@ -1,7 +1,7 @@
 package org.aviatrip.identityservice.repository;
 
 import jakarta.transaction.Transactional;
-import org.aviatrip.identityservice.dto.response.error.UserInfo;
+import org.aviatrip.identityservice.dto.response.UserInfo;
 import org.aviatrip.identityservice.entity.User;
 import org.aviatrip.identityservice.enumeration.Role;
 import org.junit.jupiter.api.Test;
